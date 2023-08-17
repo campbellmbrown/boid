@@ -1,3 +1,12 @@
 {
-    "dotnet.defaultSolution": "Boid.sln"
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+
+    "git.branchPrefix": "feature/",
+
+    "dotnet.defaultSolution": "Boid.sln",
+    "cSpell.words": [
+        "Boid"
+    ]
 }
