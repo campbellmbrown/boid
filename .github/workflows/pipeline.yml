@@ -1,0 +1,32 @@
+name: Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  DOTNET_VERSION: '6.0' # The .NET SDK version to use
+
+jobs:
+  formatting:
+    name: Basic Checks
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Temp fix for path to content pipeline
+        run: sed -i s/campb/runneradmin/g Boid/Content/Content.mgcb
+
+      - name: Build
+        run: dotnet build Boid --configuration Release
+
+      - name: Test
+        run: dotnet test BoidTests
+
+      - name: C# Formatting
+        run: |
+          dotnet format Boid --verify-no-changes
+          dotnet format BoidTests --verify-no-changes
