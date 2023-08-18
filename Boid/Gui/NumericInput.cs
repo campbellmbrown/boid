@@ -8,6 +8,7 @@ namespace Boid.Gui;
 
 public interface INumericInput : IGuiComponent, IFrameTickable, ILeftClickable
 {
+    float Value { get; set; }
 }
 
 public class NumericInput : GuiComponent, INumericInput
@@ -32,6 +33,17 @@ public class NumericInput : GuiComponent, INumericInput
     public RectangleF LeftClickArea => new RectangleF(Origin.X, Origin.Y, Width, Height);
 
     public bool Focused { get; set; }
+
+    float _value;
+    public float Value
+    {
+        get => _value;
+        set
+        {
+            _value = value;
+            _text.UpdateText(value.ToString());
+        }
+    }
 
     public NumericInput(ITextDisplay text, HorizontalAlignment horizontalAlignment, int width, int padding)
     {
