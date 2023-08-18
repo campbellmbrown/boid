@@ -1,6 +1,7 @@
 using System;
 using Boid;
 using Boid.Gui;
+using Boid.Gui.Items;
 using Boid.Visual;
 using Moq;
 using NUnit.Framework;
