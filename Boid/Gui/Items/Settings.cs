@@ -11,11 +11,10 @@ public class Settings : GuiItem, ISettings
 {
     readonly IGrid _grid;
 
-    public Settings(ILayerView layerView, IGrid grid, GuiPlacement placement)
-        : base(layerView)
+    public Settings(ILayerView layerView, GuiPlacement placement, IGrid grid)
+        : base(layerView, placement)
     {
         _grid = grid;
-        Placement = placement;
     }
 
     public override void FinalizeItem()

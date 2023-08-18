@@ -4,28 +4,27 @@ using Microsoft.Xna.Framework;
 
 namespace Boid.Gui.Items;
 
-public interface IGuiItem : IGuiElement, IVisual, IFrameTickable
+public interface IGuiItem : IGuiElement, IFrameTickable, IVisual
 {
-    GuiPlacement Placement { get; }
-
     void FinalizeItem();
 }
 
 public abstract class GuiItem : IGuiItem
 {
     readonly ILayerView _layerView;
+    readonly GuiPlacement _placement;
     bool _finalized = false;
 
-    protected GuiItem(ILayerView layerView)
+    protected GuiItem(ILayerView layerView, GuiPlacement placement)
     {
         _layerView = layerView;
+        _placement = placement;
     }
 
-    public GuiPlacement Placement { get; protected init; }
     public int Width { get; protected set; }
     public int Height { get; protected set; }
 
-    protected Vector2 Position => _layerView.Origin + Placement switch
+    protected Vector2 Position => _layerView.Origin + _placement switch
     {
         GuiPlacement.TopLeft => Vector2.Zero,
         GuiPlacement.TopMiddle => new Vector2((_layerView.Size.X - Width) / 2f, 0f),

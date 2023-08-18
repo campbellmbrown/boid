@@ -80,7 +80,7 @@ public class Game1 : Game
         grid.AddComponent(flockDistanceInput, 2, 1);
         grid.AddComponent(avoidDistanceLabel, 3, 0);
         grid.AddComponent(avoidDistanceInput, 3, 1);
-        Settings settings = new(_spriteBatchManager.GuiLayerView, grid, GuiPlacement.TopLeft);
+        Settings settings = new(_spriteBatchManager.GuiLayerView, GuiPlacement.TopLeft, grid);
 
         _guiManager.AddItem(settings);
         _guiManager.FinalizeGui();

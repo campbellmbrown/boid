@@ -15,9 +15,8 @@ namespace BoidTests.Gui.Items;
 class GuiItemImplementation : GuiItem
 {
     public GuiItemImplementation(ILayerView layerView, GuiPlacement placement, int width, int height)
-        : base(layerView)
+        : base(layerView, placement)
     {
-        Placement = placement;
         Width = width;
         Height = height;
     }
