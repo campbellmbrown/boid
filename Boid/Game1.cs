@@ -1,6 +1,7 @@
 ﻿using Boid.Gui;
 using Boid.Gui.Layout;
 using Boid.Input;
+using Boid.Simulation;
 using Boid.Visual;
 using CreepyCrawler.Input;
 using Microsoft.Xna.Framework;
@@ -17,6 +18,7 @@ public class Game1 : Game
     SpriteBatchManager? _spriteBatchManager;
 
     IInputManager? _inputManager;
+    BoidSimulator? _boidSimulator;
 
     public Game1()
     {
@@ -49,6 +51,7 @@ public class Game1 : Game
         SpriteBatch spriteBatch = new(GraphicsDevice);
         _spriteBatchWrapper = new SpriteBatchWrapper(spriteBatch);
         _spriteBatchManager = new SpriteBatchManager(GraphicsDevice, _spriteBatchWrapper);
+        _spriteBatchManager.MainLayerView.Camera.LookAt(Vector2.Zero);
         ContentProvider contentProvider = new(Content);
         MouseWrapper mouseWrapper = new();
         KeyboardWrapper keyboardWrapper = new();
@@ -57,33 +60,42 @@ public class Game1 : Game
         const int padding = 4;
         const int spacing = 10;
         const int margin = 10;
+        const int inputWidth = 100;
         var font = contentProvider.GetFont(FontId.Normal);
-        NumericInput testNumericInput1 = new(new TextDisplay(font, Color.White, 1f), HorizontalAlignment.Left, 100, padding, 10.0f);
-        NumericInput testNumericInput2 = new(new TextDisplay(font, Color.White, 1f), HorizontalAlignment.Left, 100, padding, 10.1f);
-        NumericInput testNumericInput3 = new(new TextDisplay(font, Color.White, 1f), HorizontalAlignment.Left, 100, padding, 0.1f);
-        NumericInput testNumericInput4 = new(new TextDisplay(font, Color.White, 1f), HorizontalAlignment.Left, 100, padding, -10.1f);
-        Label label1 = new(new TextDisplay("foo", font, Color.White, 1f), HorizontalAlignment.Left);
-        Label label2 = new(new TextDisplay("foobar", font, Color.White, 1f), HorizontalAlignment.Left);
-        Label label3 = new(new TextDisplay("=", font, Color.White, 1f), HorizontalAlignment.Left);
-        Label label4 = new(new TextDisplay("dwadafsgrgrd", font, Color.White, 1f), HorizontalAlignment.Left);
+        NumericInput maxSpeedInput = new(new TextDisplay(font, Color.White, 1f), HorizontalAlignment.Left, inputWidth, padding, 100f);
+        NumericInput minSpeedInput = new(new TextDisplay(font, Color.White, 1f), HorizontalAlignment.Left, inputWidth, padding, 10f);
+        NumericInput flockDistanceInput = new(new TextDisplay(font, Color.White, 1f), HorizontalAlignment.Left, inputWidth, padding, 50f);
+        NumericInput avoidDistanceInput = new(new TextDisplay(font, Color.White, 1f), HorizontalAlignment.Left, inputWidth, padding, 10f);
+        Label maxSpeedLabel = new(new TextDisplay("Max speed", font, Color.White, 1f), HorizontalAlignment.Left);
+        Label minSpeedLabel = new(new TextDisplay("Min speed", font, Color.White, 1f), HorizontalAlignment.Left);
+        Label flockDistanceLabel = new(new TextDisplay("Flock distance", font, Color.White, 1f), HorizontalAlignment.Left);
+        Label avoidDistanceLabel = new(new TextDisplay("Avoid distance", font, Color.White, 1f), HorizontalAlignment.Left);
         Grid grid = new(4, 2, spacing, margin);
-        grid.AddComponent(label1, 0, 0);
-        grid.AddComponent(testNumericInput1, 0, 1);
-        grid.AddComponent(label2, 1, 0);
-        grid.AddComponent(testNumericInput2, 1, 1);
-        grid.AddComponent(label3, 2, 0);
-        grid.AddComponent(testNumericInput3, 2, 1);
-        grid.AddComponent(label4, 3, 0);
-        grid.AddComponent(testNumericInput4, 3, 1);
+        grid.AddComponent(maxSpeedLabel, 0, 0);
+        grid.AddComponent(maxSpeedInput, 0, 1);
+        grid.AddComponent(minSpeedLabel, 1, 0);
+        grid.AddComponent(minSpeedInput, 1, 1);
+        grid.AddComponent(flockDistanceLabel, 2, 0);
+        grid.AddComponent(flockDistanceInput, 2, 1);
+        grid.AddComponent(avoidDistanceLabel, 3, 0);
+        grid.AddComponent(avoidDistanceInput, 3, 1);
         Settings settings = new(_spriteBatchManager.GuiLayerView, grid, GuiPlacement.TopLeft);
 
         _guiManager.AddItem(settings);
         _guiManager.FinalizeGui();
 
-        _inputManager.RegisterLeftClick(testNumericInput1);
-        _inputManager.RegisterLeftClick(testNumericInput2);
-        _inputManager.RegisterLeftClick(testNumericInput3);
-        _inputManager.RegisterLeftClick(testNumericInput4);
+        _inputManager.RegisterLeftClick(maxSpeedInput);
+        _inputManager.RegisterLeftClick(minSpeedInput);
+        _inputManager.RegisterLeftClick(flockDistanceInput);
+        _inputManager.RegisterLeftClick(avoidDistanceInput);
+
+        Parameters parameters = new(
+            maxSpeedInput,
+            minSpeedInput,
+            flockDistanceInput,
+            avoidDistanceInput
+        );
+        _boidSimulator = new BoidSimulator(parameters, _spriteBatchManager.MainLayerView);
     }
 
     protected override void Update(GameTime gameTime)
@@ -91,6 +103,7 @@ public class Game1 : Game
         _frameTickManager.GameTime = gameTime;
         _guiManager.FrameTick(_frameTickManager);
         _inputManager!.FrameTick(_frameTickManager);
+        _boidSimulator!.FrameTick(_frameTickManager);
         base.Update(gameTime);
     }
 
@@ -98,6 +111,8 @@ public class Game1 : Game
     {
         _spriteBatchManager!.Start(DrawType.Gui);
         _guiManager.Draw(_spriteBatchWrapper!);
+        _spriteBatchManager!.Switch(DrawType.Main);
+        _boidSimulator!.Draw(_spriteBatchWrapper!);
         _spriteBatchManager.Finish();
         base.Draw(gameTime);
     }
