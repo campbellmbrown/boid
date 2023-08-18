@@ -40,11 +40,10 @@ public class GuiItemTests
     public void FinalizeItem_AlreadyFinalized_ThrowsException()
     {
         // Given:
-        GuiItemImplementation guiItem = new(_layerViewMock.Object, GuiPlacement.TopLeft, 100, 40);
-        guiItem.FinalizeItem();
+        _guiItem.FinalizeItem();
 
         // When/then:
-        Assert.Throws<InvalidOperationException>(() => guiItem.FinalizeItem());
+        Assert.Throws<InvalidOperationException>(() => _guiItem.FinalizeItem());
     }
 
     [Test]
@@ -59,12 +58,36 @@ public class GuiItemTests
     }
 
     [Test]
+    public void FrameTick_Finalized_DoesNotThrowsException()
+    {
+        // Given:
+        _guiItem.FinalizeItem();
+
+        // When/then:
+        Assert.DoesNotThrow(
+            () => _guiItem.FrameTick(Mock.Of<IFrameTickManager>())
+        );
+    }
+
+    [Test]
     public void Draw_NotFinalized_ThrowsException()
     {
         // Given not finalized:
 
         // When/then:
         Assert.Throws<InvalidOperationException>(
+            () => _guiItem.Draw(Mock.Of<ISpriteBatchWrapper>())
+        );
+    }
+
+    [Test]
+    public void Draw_Finalized_DoesNotThrowsException()
+    {
+        // Given:
+        _guiItem.FinalizeItem();
+
+        // When/then:
+        Assert.DoesNotThrow(
             () => _guiItem.Draw(Mock.Of<ISpriteBatchWrapper>())
         );
     }
@@ -93,5 +116,16 @@ public class GuiItemTests
 
         // Then:
         Assert.That(position, Is.EqualTo(new Vector2(expectedPosX, expectedPosY)));
+    }
+
+    public void InvalidGuiPlacement_ThrowsException()
+    {
+        // Given:
+        GuiItemImplementation guiItem = new(_layerViewMock.Object, (GuiPlacement)99, 40, 10);
+
+        // When/then:
+        Assert.DoesNotThrow(
+            () => guiItem.GetPosition()
+        );
     }
 }
