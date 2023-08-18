@@ -5,6 +5,9 @@
 
     "git.branchPrefix": "feature/",
 
+    "gitPrefix.pattern": "\\w+\\/(.*)\\/.*",
+    "gitPrefix.replacement": "#$1 ",
+
     "dotnet.defaultSolution": "Boid.sln",
     "cSpell.words": [
         "boid",
