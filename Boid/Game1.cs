@@ -1,5 +1,6 @@
 ﻿using Boid.Gui;
 using Boid.Gui.Layout;
+using Boid.Input;
 using Boid.Visual;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,6 +15,8 @@ public class Game1 : Game
     readonly FrameTickManager _frameTickManager = new();
     SpriteBatchWrapper? _spriteBatchWrapper;
     SpriteBatchManager? _spriteBatchManager;
+
+    IClickManager? _clickManager;
 
     public Game1()
     {
@@ -40,6 +43,8 @@ public class Game1 : Game
         _spriteBatchWrapper = new SpriteBatchWrapper(spriteBatch);
         _spriteBatchManager = new SpriteBatchManager(GraphicsDevice, _spriteBatchWrapper);
         ContentProvider contentProvider = new(Content);
+        MouseWrapper mouseWrapper = new();
+        _clickManager = new ClickManager(_spriteBatchManager.GuiLayerView, mouseWrapper);
 
         const int padding = 4;
         const int spacing = 10;
@@ -64,6 +69,11 @@ public class Game1 : Game
 
         _guiManager.AddItem(settings);
         _guiManager.FinalizeGui();
+
+        _clickManager.RegisterLeftClick(testNumericInput1);
+        _clickManager.RegisterLeftClick(testNumericInput2);
+        _clickManager.RegisterLeftClick(testNumericInput3);
+        _clickManager.RegisterLeftClick(testNumericInput4);
     }
 
     protected override void Update(GameTime gameTime)
@@ -75,6 +85,7 @@ public class Game1 : Game
 
         _frameTickManager.GameTime = gameTime;
         _guiManager.FrameTick(_frameTickManager);
+        _clickManager!.FrameTick(_frameTickManager);
         base.Update(gameTime);
     }
 

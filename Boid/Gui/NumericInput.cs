@@ -1,11 +1,12 @@
 using System;
+using Boid.Input;
 using Boid.Visual;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
 namespace Boid.Gui;
 
-public interface INumericInput : IGuiComponent
+public interface INumericInput : IGuiComponent, ILeftClickable
 {
 }
 
@@ -15,10 +16,13 @@ public class NumericInput : GuiComponent, INumericInput
     readonly HorizontalAlignment _horizontalAlignment;
     Vector2 _offset = Vector2.Zero;
     Vector2 _textOffset;
+    Color _borderColor;
     bool _finalized = false;
 
     Vector2 Origin => Position + _offset;
     Vector2 TextPosition => Origin + _textOffset;
+
+    public RectangleF LeftClickArea => new RectangleF(Origin.X, Origin.Y, Width, Height);
 
     public NumericInput(ITextDisplay text, HorizontalAlignment horizontalAlignment, int width, int padding)
     {
@@ -61,6 +65,22 @@ public class NumericInput : GuiComponent, INumericInput
             throw new InvalidOperationException("Attempted to draw numeric input before finalizing.");
         }
         _text.Draw(spriteBatch);
-        spriteBatch.SpriteBatch.DrawRectangle(new RectangleF(Origin.X, Origin.Y, Width, Height), Color.Red);
+        spriteBatch.SpriteBatch.DrawRectangle(LeftClickArea, _borderColor);
+    }
+
+    public void LeftClickAction()
+    {
+        Console.WriteLine("Clicked!!!");
+    }
+
+    public void ChangeState(ClickState clickState)
+    {
+        _borderColor = clickState switch
+        {
+            ClickState.None => Color.Magenta,
+            ClickState.Hovered => Color.Blue,
+            ClickState.Clicked => Color.Red,
+            _ => throw new ArgumentException("Click state not supported."),
+        };
     }
 }
