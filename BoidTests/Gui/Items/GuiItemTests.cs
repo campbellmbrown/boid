@@ -124,7 +124,7 @@ public class GuiItemTests
         GuiItemImplementation guiItem = new(_layerViewMock.Object, (GuiPlacement)99, 40, 10);
 
         // When/then:
-        Assert.DoesNotThrow(
+        Assert.Throws<ArgumentException>(
             () => guiItem.GetPosition()
         );
     }
