@@ -64,8 +64,9 @@ public class ClickManager : IClickManager
         else
         {
             // Check for release
-            if ((_previousLeftButtonState == ButtonState.Pressed) && (_leftClicked != null) && (_leftClicked.LeftClickArea.Contains(_layerView.MousePosition)))
+            if ((_previousLeftButtonState == ButtonState.Pressed) && (_leftClicked != null) && _leftClicked.LeftClickArea.Contains(_layerView.MousePosition))
             {
+                ResetAllFocus();
                 _leftClicked.LeftClickAction();
             }
 
@@ -79,6 +80,14 @@ public class ClickManager : IClickManager
         }
 
         _previousLeftButtonState = leftButtonState;
+    }
+
+    void ResetAllFocus()
+    {
+        foreach (var leftClick in _leftClicks)
+        {
+            leftClick.Focused = false;
+        }
     }
 
     void ResetAllLeftClicks()

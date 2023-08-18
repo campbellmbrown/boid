@@ -24,6 +24,8 @@ public class NumericInput : GuiComponent, INumericInput
 
     public RectangleF LeftClickArea => new RectangleF(Origin.X, Origin.Y, Width, Height);
 
+    public bool Focused { get; set; }
+
     public NumericInput(ITextDisplay text, HorizontalAlignment horizontalAlignment, int width, int padding)
     {
         _text = text;
@@ -70,7 +72,7 @@ public class NumericInput : GuiComponent, INumericInput
 
     public void LeftClickAction()
     {
-        Console.WriteLine("Clicked!!!");
+        Focused = true;
     }
 
     public void ChangeState(ClickState clickState)
@@ -82,5 +84,9 @@ public class NumericInput : GuiComponent, INumericInput
             ClickState.Clicked => Color.Red,
             _ => throw new ArgumentException("Click state not supported."),
         };
+        if (Focused && (clickState == ClickState.None))
+        {
+            _borderColor = Color.Yellow;
+        }
     }
 }
