@@ -34,6 +34,11 @@ public class TextDisplay : ITextDisplay
         _scale = scale;
     }
 
+    public TextDisplay(BitmapFont font, Color color, float scale)
+        : this("", font, color, scale)
+    {
+    }
+
     public void UpdateText(string text)
     {
         _text = text;

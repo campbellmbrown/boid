@@ -50,17 +50,17 @@ public class Game1 : Game
         const int spacing = 10;
         VerticalStack verticalStack = new(spacing);
         NumericInput testNumericInput1 = new(
-            new TextDisplay("0", contentProvider.GetFont(FontId.Normal), Color.White, 1f),
-            HorizontalAlignment.Right, 100, padding);
+            new TextDisplay(contentProvider.GetFont(FontId.Normal), Color.White, 1f),
+            HorizontalAlignment.Right, 100, padding, 10.0f);
         NumericInput testNumericInput2 = new(
-            new TextDisplay("0", contentProvider.GetFont(FontId.Normal), Color.White, 1f),
-            HorizontalAlignment.Center, 200, padding);
+            new TextDisplay(contentProvider.GetFont(FontId.Normal), Color.White, 1f),
+            HorizontalAlignment.Center, 200, padding, 10.1f);
         NumericInput testNumericInput3 = new(
-            new TextDisplay("0", contentProvider.GetFont(FontId.Normal), Color.White, 1f),
-            HorizontalAlignment.Left, 300, padding);
+            new TextDisplay(contentProvider.GetFont(FontId.Normal), Color.White, 1f),
+            HorizontalAlignment.Left, 300, padding, 0.1f);
         NumericInput testNumericInput4 = new(
-            new TextDisplay("0", contentProvider.GetFont(FontId.Normal), Color.White, 1f),
-            HorizontalAlignment.Left, 50, padding);
+            new TextDisplay(contentProvider.GetFont(FontId.Normal), Color.White, 1f),
+            HorizontalAlignment.Left, 50, padding, -10.1f);
         verticalStack.AddComponent(testNumericInput1);
         verticalStack.AddComponent(testNumericInput2);
         verticalStack.AddComponent(testNumericInput3);

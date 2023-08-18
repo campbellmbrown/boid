@@ -24,8 +24,8 @@ public class NumericInput : GuiComponent, INumericInput
     float _cursorBlinkTimer = 0f;
     bool _cursorVisible = false;
 
-    Vector2 CursorTop => TextPosition + new Vector2(_text.Width, 0);
-    Vector2 CursorBottom => TextPosition + new Vector2(_text.Width, _text.Height);
+    Vector2 CursorTop => TextPosition + new Vector2(_text.Width + 1, 0);
+    Vector2 CursorBottom => TextPosition + new Vector2(_text.Width + 1, _text.Height);
 
     Vector2 Origin => Position + _offset;
     Vector2 TextPosition => Origin + _textOffset;
@@ -45,9 +45,15 @@ public class NumericInput : GuiComponent, INumericInput
         }
     }
 
-    public NumericInput(ITextDisplay text, HorizontalAlignment horizontalAlignment, int width, int padding)
+    public NumericInput(
+        ITextDisplay text,
+        HorizontalAlignment horizontalAlignment,
+        int width,
+        int padding,
+        float defaultValue)
     {
         _text = text;
+        Value = defaultValue;
         _horizontalAlignment = horizontalAlignment;
         Width = width;
         Height = (int)(_text.Height + (2 * padding));
