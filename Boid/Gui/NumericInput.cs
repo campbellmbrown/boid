@@ -6,7 +6,7 @@ using MonoGame.Extended;
 
 namespace Boid.Gui;
 
-public interface INumericInput : IGuiComponent, ILeftClickable
+public interface INumericInput : IGuiComponent, IFrameTickable, ILeftClickable
 {
 }
 
@@ -18,6 +18,13 @@ public class NumericInput : GuiComponent, INumericInput
     Vector2 _textOffset;
     Color _borderColor;
     bool _finalized = false;
+
+    const float cursorBlinkInterval = 0.5f;
+    float _cursorBlinkTimer = 0f;
+    bool _cursorVisible = false;
+
+    Vector2 CursorTop => TextPosition + new Vector2(_text.Width, 0);
+    Vector2 CursorBottom => TextPosition + new Vector2(_text.Width, _text.Height);
 
     Vector2 Origin => Position + _offset;
     Vector2 TextPosition => Origin + _textOffset;
@@ -54,6 +61,24 @@ public class NumericInput : GuiComponent, INumericInput
         _finalized = true;
     }
 
+    public override void FrameTick(IFrameTickManager frameTickManager)
+    {
+        if (Focused)
+        {
+            _cursorBlinkTimer += frameTickManager.TimeDiffSec;
+            if (_cursorBlinkTimer >= cursorBlinkInterval)
+            {
+                _cursorBlinkTimer -= cursorBlinkInterval;
+                _cursorVisible = !_cursorVisible;
+            }
+        }
+        else
+        {
+            _cursorBlinkTimer = 0f;
+            _cursorVisible = false;
+        }
+    }
+
     public override void UpdatePosition(Vector2 position)
     {
         base.UpdatePosition(position);
@@ -67,26 +92,31 @@ public class NumericInput : GuiComponent, INumericInput
             throw new InvalidOperationException("Attempted to draw numeric input before finalizing.");
         }
         _text.Draw(spriteBatch);
+        if (_cursorVisible)
+        {
+            spriteBatch.SpriteBatch.DrawLine(CursorTop, CursorBottom, Color.White);
+        }
         spriteBatch.SpriteBatch.DrawRectangle(LeftClickArea, _borderColor);
     }
 
     public void LeftClickAction()
     {
         Focused = true;
+        _cursorVisible = true;
     }
 
     public void ChangeState(ClickState clickState)
     {
         _borderColor = clickState switch
         {
-            ClickState.None => Color.Magenta,
-            ClickState.Hovered => Color.Blue,
-            ClickState.Clicked => Color.Red,
+            ClickState.None => Color.Yellow,
+            ClickState.Hovered => Color.Orange,
+            ClickState.Clicked => Color.Magenta,
             _ => throw new ArgumentException("Click state not supported."),
         };
         if (Focused && (clickState == ClickState.None))
         {
-            _borderColor = Color.Yellow;
+            _borderColor = Color.Red;
         }
     }
 }

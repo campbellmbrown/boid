@@ -47,12 +47,4 @@ public class VerticalStack : Stack, IVerticalStack
             heightOffset += _spacing;
         }
     }
-
-    public override void Draw(ISpriteBatchWrapper spriteBatch)
-    {
-        foreach (var component in Components)
-        {
-            component.Draw(spriteBatch);
-        }
-    }
 }

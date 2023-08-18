@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Boid.Gui;
 
-public interface IGuiComponent : IGuiElement, IVisualRelative
+public interface IGuiComponent : IGuiElement, IVisualRelative, IFrameTickable
 {
     void FinalizeComponent(int availableWidth, int availableHeight);
 }
@@ -26,4 +26,9 @@ public abstract class GuiComponent : IGuiComponent
     }
 
     public abstract void Draw(ISpriteBatchWrapper spriteBatch);
+
+    public virtual void FrameTick(IFrameTickManager frameTickManager)
+    {
+        // Do nothing by default.
+    }
 }

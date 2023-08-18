@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace Boid.Gui.Layout;
 
-public interface IStack : IGuiElement, IVisualRelative
+public interface IStack : IGuiElement, IVisualRelative, IFrameTickable
 {
     void AddComponent(IGuiComponent component);
     void FinalizeStack();
@@ -29,5 +29,19 @@ public abstract class Stack : IStack
         Position = position;
     }
 
-    public abstract void Draw(ISpriteBatchWrapper spriteBatch);
+    public virtual void Draw(ISpriteBatchWrapper spriteBatch)
+    {
+        foreach (var component in Components)
+        {
+            component.Draw(spriteBatch);
+        }
+    }
+
+    public virtual void FrameTick(IFrameTickManager frameTickManager)
+    {
+        foreach (var component in Components)
+        {
+            component.FrameTick(frameTickManager);
+        }
+    }
 }

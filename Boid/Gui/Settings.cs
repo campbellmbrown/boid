@@ -28,6 +28,7 @@ public class Settings : GuiItem, ISettings
 
     public override void FrameTick(IFrameTickManager frameTickManager)
     {
+        _stack.FrameTick(frameTickManager);
         _stack.UpdatePosition(Position);
     }
 
