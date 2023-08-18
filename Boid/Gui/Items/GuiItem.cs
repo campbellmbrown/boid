@@ -16,17 +16,14 @@ public abstract class GuiItem : IGuiItem
     readonly ILayerView _layerView;
     bool _finalized = false;
 
+    protected GuiItem(ILayerView layerView)
+    {
+        _layerView = layerView;
+    }
+
     public GuiPlacement Placement { get; protected init; }
     public int Width { get; protected set; }
     public int Height { get; protected set; }
-
-    public virtual void Draw(ISpriteBatchWrapper spriteBatch)
-    {
-        if (!_finalized)
-        {
-            throw new InvalidOperationException("Attempted to draw menu before finalizing.");
-        }
-    }
 
     protected Vector2 Position => _layerView.Origin + Placement switch
     {
@@ -42,11 +39,6 @@ public abstract class GuiItem : IGuiItem
         _ => throw new ArgumentException("Grid placement not supported."),
     };
 
-    public GuiItem(ILayerView layerView)
-    {
-        _layerView = layerView;
-    }
-
     public virtual void FinalizeItem()
     {
         if (_finalized)
@@ -56,5 +48,19 @@ public abstract class GuiItem : IGuiItem
         _finalized = true;
     }
 
-    public abstract void FrameTick(IFrameTickManager frameTickManager);
+    public virtual void FrameTick(IFrameTickManager frameTickManager)
+    {
+        if (!_finalized)
+        {
+            throw new InvalidOperationException("Attempted to run GUI item before finalizing.");
+        }
+    }
+
+    public virtual void Draw(ISpriteBatchWrapper spriteBatch)
+    {
+        if (!_finalized)
+        {
+            throw new InvalidOperationException("Attempted to draw GUI item before finalizing.");
+        }
+    }
 }
