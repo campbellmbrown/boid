@@ -7,7 +7,7 @@ using MonoGame.Extended;
 
 namespace Boid.Gui;
 
-public interface INumericInput : IGuiComponent, IFrameTickable, ILeftClickable
+public interface INumericInput : IGuiComponent, ILeftClickable
 {
     float Value { get; set; }
 }

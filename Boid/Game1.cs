@@ -57,23 +57,24 @@ public class Game1 : Game
         const int padding = 4;
         const int spacing = 10;
         const int margin = 10;
-        NumericInput testNumericInput1 = new(
-            new TextDisplay(contentProvider.GetFont(FontId.Normal), Color.White, 1f),
-            HorizontalAlignment.Right, 100, padding, 10.0f);
-        NumericInput testNumericInput2 = new(
-            new TextDisplay(contentProvider.GetFont(FontId.Normal), Color.White, 1f),
-            HorizontalAlignment.Center, 200, padding, 10.1f);
-        NumericInput testNumericInput3 = new(
-            new TextDisplay(contentProvider.GetFont(FontId.Normal), Color.White, 1f),
-            HorizontalAlignment.Left, 300, padding, 0.1f);
-        NumericInput testNumericInput4 = new(
-            new TextDisplay(contentProvider.GetFont(FontId.Normal), Color.White, 1f),
-            HorizontalAlignment.Left, 50, padding, -10.1f);
+        var font = contentProvider.GetFont(FontId.Normal);
+        NumericInput testNumericInput1 = new(new TextDisplay(font, Color.White, 1f), HorizontalAlignment.Left, 100, padding, 10.0f);
+        NumericInput testNumericInput2 = new(new TextDisplay(font, Color.White, 1f), HorizontalAlignment.Left, 100, padding, 10.1f);
+        NumericInput testNumericInput3 = new(new TextDisplay(font, Color.White, 1f), HorizontalAlignment.Left, 100, padding, 0.1f);
+        NumericInput testNumericInput4 = new(new TextDisplay(font, Color.White, 1f), HorizontalAlignment.Left, 100, padding, -10.1f);
+        Label label1 = new(new TextDisplay("foo", font, Color.White, 1f), HorizontalAlignment.Left);
+        Label label2 = new(new TextDisplay("foobar", font, Color.White, 1f), HorizontalAlignment.Left);
+        Label label3 = new(new TextDisplay("=", font, Color.White, 1f), HorizontalAlignment.Left);
+        Label label4 = new(new TextDisplay("dwadafsgrgrd", font, Color.White, 1f), HorizontalAlignment.Left);
         Grid grid = new(4, 2, spacing, margin);
-        grid.AddComponent(testNumericInput1, 0, 0);
+        grid.AddComponent(label1, 0, 0);
+        grid.AddComponent(testNumericInput1, 0, 1);
+        grid.AddComponent(label2, 1, 0);
         grid.AddComponent(testNumericInput2, 1, 1);
-        grid.AddComponent(testNumericInput3, 2, 0);
-        grid.AddComponent(testNumericInput4, 3, 0);
+        grid.AddComponent(label3, 2, 0);
+        grid.AddComponent(testNumericInput3, 2, 1);
+        grid.AddComponent(label4, 3, 0);
+        grid.AddComponent(testNumericInput4, 3, 1);
         Settings settings = new(_spriteBatchManager.GuiLayerView, grid, GuiPlacement.TopLeft);
 
         _guiManager.AddItem(settings);
