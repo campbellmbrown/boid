@@ -1,7 +1,7 @@
 using Boid.Gui.Layout;
 using Boid.Visual;
 
-namespace Boid.Gui;
+namespace Boid.Gui.Items;
 
 public interface ISettings : IGuiItem
 {
