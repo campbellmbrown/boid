@@ -9,32 +9,32 @@ public interface ISettings : IGuiItem
 
 public class Settings : GuiItem, ISettings
 {
-    readonly IVerticalStack _stack;
+    readonly IGrid _grid;
 
-    public Settings(ILayerView layerView, IVerticalStack verticalStack, GuiPlacement placement)
+    public Settings(ILayerView layerView, IGrid grid, GuiPlacement placement)
         : base(layerView)
     {
-        _stack = verticalStack;
+        _grid = grid;
         Placement = placement;
     }
 
     public override void FinalizeItem()
     {
         base.FinalizeItem();
-        _stack.FinalizeStack();
-        Width = _stack.Width;
-        Height = _stack.Height;
+        _grid.FinalizeGrid();
+        Width = _grid.Width;
+        Height = _grid.Height;
     }
 
     public override void FrameTick(IFrameTickManager frameTickManager)
     {
-        _stack.FrameTick(frameTickManager);
-        _stack.UpdatePosition(Position);
+        _grid.FrameTick(frameTickManager);
+        _grid.UpdatePosition(Position);
     }
 
     public override void Draw(ISpriteBatchWrapper spriteBatch)
     {
         base.Draw(spriteBatch);
-        _stack.Draw(spriteBatch);
+        _grid.Draw(spriteBatch);
     }
 }

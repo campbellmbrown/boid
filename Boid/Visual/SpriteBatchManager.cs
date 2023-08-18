@@ -59,7 +59,7 @@ public class SpriteBatchManager : ISpriteBatchManager
         PresentationParameters pp = _graphicsDevice.PresentationParameters;
         _guiRenderTarget = new RenderTarget2D(_graphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight);
         _mainRenderTarget = new RenderTarget2D(_graphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight);
-        GuiLayerView = new LayerView(_graphicsDevice, 2);
+        GuiLayerView = new LayerView(_graphicsDevice, 1);
         MainLayerView = new LayerView(_graphicsDevice, 4);
     }
 

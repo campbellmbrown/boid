@@ -27,6 +27,13 @@ public class Game1 : Game
     protected override void Initialize()
     {
         _graphics.IsFullScreen = false;
+        Vector2 screenSize = new(
+            GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width,
+            GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
+
+        // Remove the scalars when switching to full screen.
+        _graphics.PreferredBackBufferWidth = (int)(screenSize.X * 0.95f);
+        _graphics.PreferredBackBufferHeight = (int)(screenSize.Y * 0.8f);
         _graphics.SynchronizeWithVerticalRetrace = true;
         Window.AllowUserResizing = true;
         _graphics.ApplyChanges();
@@ -49,7 +56,7 @@ public class Game1 : Game
 
         const int padding = 4;
         const int spacing = 10;
-        VerticalStack verticalStack = new(spacing);
+        const int margin = 10;
         NumericInput testNumericInput1 = new(
             new TextDisplay(contentProvider.GetFont(FontId.Normal), Color.White, 1f),
             HorizontalAlignment.Right, 100, padding, 10.0f);
@@ -62,11 +69,12 @@ public class Game1 : Game
         NumericInput testNumericInput4 = new(
             new TextDisplay(contentProvider.GetFont(FontId.Normal), Color.White, 1f),
             HorizontalAlignment.Left, 50, padding, -10.1f);
-        verticalStack.AddComponent(testNumericInput1);
-        verticalStack.AddComponent(testNumericInput2);
-        verticalStack.AddComponent(testNumericInput3);
-        verticalStack.AddComponent(testNumericInput4);
-        Settings settings = new(_spriteBatchManager.GuiLayerView, verticalStack, GuiPlacement.TopLeft);
+        Grid grid = new(4, 2, spacing, margin);
+        grid.AddComponent(testNumericInput1, 0, 0);
+        grid.AddComponent(testNumericInput2, 1, 1);
+        grid.AddComponent(testNumericInput3, 2, 0);
+        grid.AddComponent(testNumericInput4, 3, 0);
+        Settings settings = new(_spriteBatchManager.GuiLayerView, grid, GuiPlacement.TopLeft);
 
         _guiManager.AddItem(settings);
         _guiManager.FinalizeGui();
