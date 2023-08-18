@@ -2,6 +2,7 @@ using System;
 using Boid.Input;
 using Boid.Visual;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 
 namespace Boid.Gui;
@@ -41,7 +42,7 @@ public class NumericInput : GuiComponent, INumericInput
         set
         {
             _value = value;
-            _text.UpdateText(value.ToString());
+            _text.Text = value.ToString();
         }
     }
 
@@ -135,6 +136,43 @@ public class NumericInput : GuiComponent, INumericInput
         if (Focused && (clickState == ClickState.None))
         {
             _borderColor = Color.Red;
+        }
+    }
+
+    public void KeyPressed(Keys key)
+    {
+        switch (key)
+        {
+            case Keys.Escape:
+                Focused = false;
+                break;
+            case Keys.Enter:
+                Focused = false;
+                break;
+            case Keys.D0:
+            case Keys.D1:
+            case Keys.D2:
+            case Keys.D3:
+            case Keys.D4:
+            case Keys.D5:
+            case Keys.D6:
+            case Keys.D7:
+            case Keys.D8:
+            case Keys.D9:
+                _text.Text += (char)key;
+                break;
+            case Keys.Back:
+            if (_text.Text.Length > 0)
+                {
+                    _text.Text = _text.Text.Remove(_text.Text.Length - 1, 1);
+                }
+                break;
+            case Keys.OemPeriod:
+                if (!_text.Text.Contains('.'))
+                {
+                    _text.Text += '.';
+                }
+                break;
         }
     }
 }

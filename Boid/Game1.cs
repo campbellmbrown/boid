@@ -2,9 +2,9 @@
 using Boid.Gui.Layout;
 using Boid.Input;
 using Boid.Visual;
+using CreepyCrawler.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Boid;
 
@@ -44,7 +44,8 @@ public class Game1 : Game
         _spriteBatchManager = new SpriteBatchManager(GraphicsDevice, _spriteBatchWrapper);
         ContentProvider contentProvider = new(Content);
         MouseWrapper mouseWrapper = new();
-        _inputManager = new InputManager(_spriteBatchManager.GuiLayerView, mouseWrapper);
+        KeyboardWrapper keyboardWrapper = new();
+        _inputManager = new InputManager(_spriteBatchManager.GuiLayerView, mouseWrapper, keyboardWrapper);
 
         const int padding = 4;
         const int spacing = 10;
@@ -78,14 +79,9 @@ public class Game1 : Game
 
     protected override void Update(GameTime gameTime)
     {
-        if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-        {
-            Exit();
-        }
-
         _frameTickManager.GameTime = gameTime;
         _guiManager.FrameTick(_frameTickManager);
-        _clickManager!.FrameTick(_frameTickManager);
+        _inputManager!.FrameTick(_frameTickManager);
         base.Update(gameTime);
     }
 

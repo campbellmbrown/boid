@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 
 namespace Boid.Input;
@@ -9,4 +10,5 @@ public interface ILeftClickable
 
     void LeftClickAction();
     void ChangeState(ClickState clickState);
+    void KeyPressed(Keys key);
 }

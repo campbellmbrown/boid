@@ -5,11 +5,10 @@ namespace Boid.Visual;
 
 public interface ITextDisplay : IVisualRelative
 {
+    string Text { get; set; }
     float Width { get; }
     float Height { get; }
     Vector2 Size { get; }
-
-    void UpdateText(string text);
 }
 
 public class TextDisplay : ITextDisplay
@@ -18,17 +17,16 @@ public class TextDisplay : ITextDisplay
     readonly BitmapFont _font;
     readonly float _scale;
 
-    string _text;
-
     Vector2 _position = Vector2.Zero;
 
-    public float Width => _font.MeasureString(_text).Width * _scale;
+    public string Text { get; set; }
+    public float Width => _font.MeasureString(Text).Width * _scale;
     public float Height => _font.LineHeight * _scale;
     public Vector2 Size => new(Width, Height);
 
     public TextDisplay(string text, BitmapFont font, Color color, float scale)
     {
-        _text = text;
+        Text = text;
         _color = color;
         _font = font;
         _scale = scale;
@@ -39,11 +37,6 @@ public class TextDisplay : ITextDisplay
     {
     }
 
-    public void UpdateText(string text)
-    {
-        _text = text;
-    }
-
     public void UpdatePosition(Vector2 position)
     {
         _position = position;
@@ -51,6 +44,6 @@ public class TextDisplay : ITextDisplay
 
     public void Draw(ISpriteBatchWrapper spriteBatch)
     {
-        spriteBatch.SpriteBatch.DrawString(_font, _text, _position, _color, _scale);
+        spriteBatch.SpriteBatch.DrawString(_font, Text, _position, _color, _scale);
     }
 }
