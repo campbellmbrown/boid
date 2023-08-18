@@ -16,7 +16,7 @@ public class Game1 : Game
     SpriteBatchWrapper? _spriteBatchWrapper;
     SpriteBatchManager? _spriteBatchManager;
 
-    IClickManager? _clickManager;
+    IInputManager? _inputManager;
 
     public Game1()
     {
@@ -44,7 +44,7 @@ public class Game1 : Game
         _spriteBatchManager = new SpriteBatchManager(GraphicsDevice, _spriteBatchWrapper);
         ContentProvider contentProvider = new(Content);
         MouseWrapper mouseWrapper = new();
-        _clickManager = new ClickManager(_spriteBatchManager.GuiLayerView, mouseWrapper);
+        _inputManager = new InputManager(_spriteBatchManager.GuiLayerView, mouseWrapper);
 
         const int padding = 4;
         const int spacing = 10;
@@ -70,10 +70,10 @@ public class Game1 : Game
         _guiManager.AddItem(settings);
         _guiManager.FinalizeGui();
 
-        _clickManager.RegisterLeftClick(testNumericInput1);
-        _clickManager.RegisterLeftClick(testNumericInput2);
-        _clickManager.RegisterLeftClick(testNumericInput3);
-        _clickManager.RegisterLeftClick(testNumericInput4);
+        _inputManager.RegisterLeftClick(testNumericInput1);
+        _inputManager.RegisterLeftClick(testNumericInput2);
+        _inputManager.RegisterLeftClick(testNumericInput3);
+        _inputManager.RegisterLeftClick(testNumericInput4);
     }
 
     protected override void Update(GameTime gameTime)

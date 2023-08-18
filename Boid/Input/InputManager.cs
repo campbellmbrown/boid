@@ -11,12 +11,12 @@ public enum ClickState
     Clicked,
 }
 
-public interface IClickManager : IFrameTickable
+public interface IInputManager : IFrameTickable
 {
     void RegisterLeftClick(ILeftClickable leftClick);
 }
 
-public class ClickManager : IClickManager
+public class InputManager : IInputManager
 {
     readonly ILayerView _layerView;
     readonly IMouseWrapper _mouseWrapper;
@@ -27,7 +27,7 @@ public class ClickManager : IClickManager
 
     ILeftClickable? _leftClicked = null;
 
-    public ClickManager(ILayerView layerView, IMouseWrapper mouseWrapper)
+    public InputManager(ILayerView layerView, IMouseWrapper mouseWrapper)
     {
         _layerView = layerView;
         _mouseWrapper = mouseWrapper;
