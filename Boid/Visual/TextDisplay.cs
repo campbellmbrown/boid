@@ -9,6 +9,8 @@ public interface ITextDisplay : IVisualRelative
     float Width { get; }
     float Height { get; }
     Vector2 Size { get; }
+
+    public float WidthToIndex(int idx);
 }
 
 public class TextDisplay : ITextDisplay
@@ -46,4 +48,6 @@ public class TextDisplay : ITextDisplay
     {
         spriteBatch.SpriteBatch.DrawString(_font, Text, _position, _color, _scale);
     }
+
+    public float WidthToIndex(int idx) => _font.MeasureString(Text[..idx]).Width * _scale;
 }

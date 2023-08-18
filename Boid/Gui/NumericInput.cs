@@ -25,15 +25,30 @@ public class NumericInput : GuiComponent, INumericInput
     float _cursorBlinkTimer = 0f;
     bool _cursorVisible = false;
 
-    Vector2 CursorTop => TextPosition + new Vector2(_text.Width + 1, 0);
-    Vector2 CursorBottom => TextPosition + new Vector2(_text.Width + 1, _text.Height);
+    const int spaceBetweenTextAndCursor = 1;
+    Vector2 CursorTop => TextPosition + new Vector2(_text.WidthToIndex(cursorIndex) + spaceBetweenTextAndCursor, 0);
+    Vector2 CursorBottom => TextPosition + new Vector2(_text.WidthToIndex(cursorIndex) + spaceBetweenTextAndCursor, _text.Height);
+    int cursorIndex = 0;
 
     Vector2 Origin => Position + _offset;
     Vector2 TextPosition => Origin + _textOffset;
 
     public RectangleF LeftClickArea => new RectangleF(Origin.X, Origin.Y, Width, Height);
 
-    public bool Focused { get; set; }
+    bool _focused = false;
+    public bool Focused
+    {
+        get => _focused;
+        set
+        {
+            _focused = value;
+            if (!_focused)
+            {
+                // Sync the value with the text when we lose focus
+                Value = string.IsNullOrEmpty(_text.Text) ? 0f : float.Parse(_text.Text);
+            }
+        }
+    }
 
     float _value;
     public float Value
@@ -43,6 +58,7 @@ public class NumericInput : GuiComponent, INumericInput
         {
             _value = value;
             _text.Text = value.ToString();
+            cursorIndex = _text.Text.Length;
         }
     }
 
@@ -144,6 +160,7 @@ public class NumericInput : GuiComponent, INumericInput
         switch (key)
         {
             case Keys.Escape:
+                Value = _value; // Reset text display
                 Focused = false;
                 break;
             case Keys.Enter:
@@ -159,19 +176,38 @@ public class NumericInput : GuiComponent, INumericInput
             case Keys.D7:
             case Keys.D8:
             case Keys.D9:
-                _text.Text += (char)key;
+                _text.Text = _text.Text.Insert(cursorIndex, ((char)key).ToString());
+                cursorIndex += 1;
                 break;
             case Keys.Back:
-            if (_text.Text.Length > 0)
+            if (cursorIndex > 0)
                 {
-                    _text.Text = _text.Text.Remove(_text.Text.Length - 1, 1);
+                    _text.Text = _text.Text.Remove(cursorIndex - 1, 1);
+                    cursorIndex -= 1;
+                }
+                break;
+            case Keys.Delete:
+                if (cursorIndex < _text.Text.Length)
+                {
+                    _text.Text = _text.Text.Remove(cursorIndex, 1);
                 }
                 break;
             case Keys.OemPeriod:
                 if (!_text.Text.Contains('.'))
                 {
-                    _text.Text += '.';
+                    _text.Text = _text.Text.Insert(cursorIndex, ".");
+                    cursorIndex += 1;
                 }
+                break;
+            case Keys.Left:
+                cursorIndex = Math.Max(0, cursorIndex - 1);
+                _cursorBlinkTimer = 0f;
+                _cursorVisible = true;
+                break;
+            case Keys.Right:
+                cursorIndex = Math.Min(_text.Text.Length, cursorIndex + 1);
+                _cursorBlinkTimer = 0f;
+                _cursorVisible = true;
                 break;
         }
     }
