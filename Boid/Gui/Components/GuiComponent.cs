@@ -1,7 +1,7 @@
 using Boid.Visual;
 using Microsoft.Xna.Framework;
 
-namespace Boid.Gui;
+namespace Boid.Gui.Components;
 
 public interface IGuiComponent : IGuiElement, IVisualRelative, IFrameTickable
 {

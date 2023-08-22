@@ -1,4 +1,4 @@
-using Boid.Gui;
+using Boid.Gui.Components;
 
 namespace Boid.Simulation;
 

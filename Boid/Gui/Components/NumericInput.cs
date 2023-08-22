@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 
-namespace Boid.Gui;
+namespace Boid.Gui.Components;
 
 public interface INumericInput : IGuiComponent, ILeftClickable
 {
