@@ -18,8 +18,6 @@ class GuiComponentImplementation : GuiComponent
         Width = width;
         Height = height;
     }
-
-    public Vector2 GetPosition() => Position;
 }
 
 public class GuiItemTests
@@ -100,6 +98,6 @@ public class GuiItemTests
         _guiComponent.UpdatePosition(newPosition);
 
         // Then:
-        Assert.That(_guiComponent.GetPosition(), Is.EqualTo(newPosition));
+        Assert.That(_guiComponent.Position, Is.EqualTo(newPosition));
     }
 }

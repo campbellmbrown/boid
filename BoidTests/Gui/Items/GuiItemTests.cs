@@ -20,8 +20,6 @@ class GuiItemImplementation : GuiItem
         Width = width;
         Height = height;
     }
-
-    public Vector2 GetPosition() => Position;
 }
 
 public class GuiItemTests
@@ -109,13 +107,12 @@ public class GuiItemTests
         // Given:
         _layerViewMock.Setup(layerView => layerView.Origin).Returns(new Vector2(-200, -100));
         _layerViewMock.Setup(layerView => layerView.Size).Returns(new Vector2(400, 200));
-        GuiItemImplementation guiItem = new(_layerViewMock.Object, guiPlacement, 40, 10);
 
         // When:
-        var position = guiItem.GetPosition();
+        GuiItemImplementation guiItem = new(_layerViewMock.Object, guiPlacement, 40, 10);
 
         // Then:
-        Assert.That(position, Is.EqualTo(new Vector2(expectedPosX, expectedPosY)));
+        Assert.That(guiItem.Position, Is.EqualTo(new Vector2(expectedPosX, expectedPosY)));
     }
 
     [Test]
@@ -126,7 +123,7 @@ public class GuiItemTests
 
         // When/then:
         Assert.Throws<ArgumentException>(
-            () => guiItem.GetPosition()
+            () => { var value = guiItem.Position; }
         );
     }
 }

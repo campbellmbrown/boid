@@ -6,6 +6,7 @@ namespace Boid.Gui.Items;
 
 public interface IGuiItem : IGuiElement, IFrameTickable, IVisual
 {
+    Vector2 Position { get; }
     void FinalizeItem();
 }
 
@@ -24,7 +25,7 @@ public abstract class GuiItem : IGuiItem
     public int Width { get; protected set; }
     public int Height { get; protected set; }
 
-    protected Vector2 Position => _layerView.Origin + _placement switch
+    public Vector2 Position => _layerView.Origin + _placement switch
     {
         GuiPlacement.TopLeft => Vector2.Zero,
         GuiPlacement.TopMiddle => new Vector2((_layerView.Size.X - Width) / 2f, 0f),
