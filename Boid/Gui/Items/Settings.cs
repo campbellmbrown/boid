@@ -27,6 +27,7 @@ public class Settings : GuiItem, ISettings
 
     public override void FrameTick(IFrameTickManager frameTickManager)
     {
+        base.FrameTick(frameTickManager);
         _grid.FrameTick(frameTickManager);
         _grid.UpdatePosition(Position);
     }

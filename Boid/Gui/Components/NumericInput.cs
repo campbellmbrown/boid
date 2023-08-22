@@ -19,7 +19,6 @@ public class NumericInput : GuiComponent, INumericInput
     Vector2 _offset = Vector2.Zero;
     Vector2 _textOffset;
     Color _borderColor;
-    bool _finalized = false;
 
     const float cursorBlinkInterval = 0.5f;
     float _cursorBlinkTimer = 0f;
@@ -82,10 +81,7 @@ public class NumericInput : GuiComponent, INumericInput
 
     public override void FinalizeComponent(int availableWidth, int availableHeight)
     {
-        if (_finalized)
-        {
-            throw new InvalidOperationException("Attempted to finalize numeric input when already finalized.");
-        }
+        base.FinalizeComponent(availableWidth, availableHeight);
         _offset = _horizontalAlignment switch
         {
             HorizontalAlignment.Left => Vector2.Zero,
@@ -93,11 +89,11 @@ public class NumericInput : GuiComponent, INumericInput
             HorizontalAlignment.Right => new Vector2(availableWidth - Width, 0f),
             _ => throw new ArgumentException("Horizontal alignment not supported."),
         };
-        _finalized = true;
     }
 
     public override void FrameTick(IFrameTickManager frameTickManager)
     {
+        base.FrameTick(frameTickManager);
         if (Focused)
         {
             _cursorBlinkTimer += frameTickManager.TimeDiffSec;
@@ -122,10 +118,7 @@ public class NumericInput : GuiComponent, INumericInput
 
     public override void Draw(ISpriteBatchWrapper spriteBatch)
     {
-        if (!_finalized)
-        {
-            throw new InvalidOperationException("Attempted to draw numeric input before finalizing.");
-        }
+        base.Draw(spriteBatch);
         _text.Draw(spriteBatch);
         if (_cursorVisible)
         {

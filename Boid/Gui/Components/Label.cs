@@ -13,7 +13,6 @@ public class Label : GuiComponent, ILabel
     readonly ITextDisplay _text;
     readonly HorizontalAlignment _horizontalAlignment;
     Vector2 _offset = Vector2.Zero;
-    bool _finalized = false;
 
     Vector2 Origin => Position + _offset;
 
@@ -27,10 +26,7 @@ public class Label : GuiComponent, ILabel
 
     public override void FinalizeComponent(int availableWidth, int availableHeight)
     {
-        if (_finalized)
-        {
-            throw new InvalidOperationException("Attempted to finalize label when already finalized.");
-        }
+        base.FinalizeComponent(availableWidth, availableHeight);
         _offset = _horizontalAlignment switch
         {
             HorizontalAlignment.Left => Vector2.Zero,
@@ -38,7 +34,6 @@ public class Label : GuiComponent, ILabel
             HorizontalAlignment.Right => new Vector2(availableWidth - Width, 0f),
             _ => throw new ArgumentException("Horizontal alignment not supported."),
         };
-        _finalized = true;
     }
 
     public override void UpdatePosition(Vector2 position)
@@ -49,10 +44,7 @@ public class Label : GuiComponent, ILabel
 
     public override void Draw(ISpriteBatchWrapper spriteBatch)
     {
-        if (!_finalized)
-        {
-            throw new InvalidOperationException("Attempted to draw label before finalizing.");
-        }
+        base.Draw(spriteBatch);
         _text.Draw(spriteBatch);
     }
 }

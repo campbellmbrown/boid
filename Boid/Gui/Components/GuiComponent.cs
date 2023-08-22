@@ -1,3 +1,4 @@
+using System;
 using Boid.Visual;
 using Microsoft.Xna.Framework;
 
@@ -10,6 +11,8 @@ public interface IGuiComponent : IGuiElement, IVisualRelative, IFrameTickable
 
 public abstract class GuiComponent : IGuiComponent
 {
+    bool _finalized = false;
+
     protected Vector2 Position { get; set; } = Vector2.Zero;
 
     public int Width { get; protected init; }
@@ -17,7 +20,11 @@ public abstract class GuiComponent : IGuiComponent
 
     public virtual void FinalizeComponent(int availableWidth, int availableHeight)
     {
-        // Do nothing by default.
+        if (_finalized)
+        {
+            throw new InvalidOperationException("Attempted to finalize GUI component when already finalized.");
+        }
+        _finalized = true;
     }
 
     public virtual void UpdatePosition(Vector2 position)
@@ -25,10 +32,19 @@ public abstract class GuiComponent : IGuiComponent
         Position = position;
     }
 
-    public abstract void Draw(ISpriteBatchWrapper spriteBatch);
+    public virtual void Draw(ISpriteBatchWrapper spriteBatch)
+    {
+        if (!_finalized)
+        {
+            throw new InvalidOperationException("Attempted to draw GUI component before finalizing.");
+        }
+    }
 
     public virtual void FrameTick(IFrameTickManager frameTickManager)
     {
-        // Do nothing by default.
+        if (!_finalized)
+        {
+            throw new InvalidOperationException("Attempted to run GUI component before finalizing.");
+        }
     }
 }
