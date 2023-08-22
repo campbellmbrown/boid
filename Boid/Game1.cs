@@ -68,10 +68,10 @@ public class Game1 : Game
         NumericInput minSpeedInput = new(HorizontalAlignment.Left, new TextDisplay(font, Color.White, 1f), inputWidth, padding, 10f);
         NumericInput flockDistanceInput = new(HorizontalAlignment.Left, new TextDisplay(font, Color.White, 1f), inputWidth, padding, 50f);
         NumericInput avoidDistanceInput = new(HorizontalAlignment.Left, new TextDisplay(font, Color.White, 1f), inputWidth, padding, 10f);
-        Label maxSpeedLabel = new(HorizontalAlignment.Left, new TextDisplay("Max speed", font, Color.White, 1f));
-        Label minSpeedLabel = new(HorizontalAlignment.Left, new TextDisplay("Min speed", font, Color.White, 1f));
-        Label flockDistanceLabel = new(HorizontalAlignment.Left, new TextDisplay("Flock distance", font, Color.White, 1f));
-        Label avoidDistanceLabel = new(HorizontalAlignment.Left, new TextDisplay("Avoid distance", font, Color.White, 1f));
+        Label maxSpeedLabel = new(new TextDisplay("Max speed", font, Color.White, 1f));
+        Label minSpeedLabel = new(new TextDisplay("Min speed", font, Color.White, 1f));
+        Label flockDistanceLabel = new(new TextDisplay("Flock distance", font, Color.White, 1f));
+        Label avoidDistanceLabel = new(new TextDisplay("Avoid distance", font, Color.White, 1f));
         Grid grid = new(4, 2, spacing, margin);
         grid.AddComponent(maxSpeedLabel, 0, 0);
         grid.AddComponent(maxSpeedInput, 0, 1);

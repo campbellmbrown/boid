@@ -12,6 +12,11 @@ public class Label : GuiComponent, ILabel
 {
     readonly ITextDisplay _text;
 
+    public Label(ITextDisplay text)
+        : this(HorizontalAlignment.Left, text)
+    {
+    }
+
     public Label(HorizontalAlignment horizontalAlignment, ITextDisplay text)
         : base(horizontalAlignment)
     {

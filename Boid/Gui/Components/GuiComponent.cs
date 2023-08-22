@@ -16,7 +16,7 @@ public abstract class GuiComponent : IGuiComponent
     Vector2 _offset = Vector2.Zero;
     bool _finalized = false;
 
-    public GuiComponent(HorizontalAlignment horizontalAlignment)
+    protected GuiComponent(HorizontalAlignment horizontalAlignment)
     {
         _horizontalAlignment = horizontalAlignment;
     }
