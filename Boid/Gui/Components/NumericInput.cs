@@ -15,8 +15,6 @@ public interface INumericInput : IGuiComponent, ILeftClickable
 public class NumericInput : GuiComponent, INumericInput
 {
     readonly ITextDisplay _text;
-    readonly HorizontalAlignment _horizontalAlignment;
-    Vector2 _offset = Vector2.Zero;
     Vector2 _textOffset;
     Color _borderColor;
 
@@ -29,10 +27,9 @@ public class NumericInput : GuiComponent, INumericInput
     Vector2 CursorBottom => TextPosition + new Vector2(_text.WidthToIndex(cursorIndex) + spaceBetweenTextAndCursor, _text.Height);
     int cursorIndex = 0;
 
-    Vector2 Origin => Position + _offset;
     Vector2 TextPosition => Origin + _textOffset;
 
-    public RectangleF LeftClickArea => new RectangleF(Origin.X, Origin.Y, Width, Height);
+    public RectangleF LeftClickArea => new(Origin.X, Origin.Y, Width, Height);
 
     bool _focused = false;
     public bool Focused
@@ -62,33 +59,21 @@ public class NumericInput : GuiComponent, INumericInput
     }
 
     public NumericInput(
-        ITextDisplay text,
         HorizontalAlignment horizontalAlignment,
+        ITextDisplay text,
         int width,
         int padding,
         float defaultValue)
+        : base(horizontalAlignment)
     {
         _text = text;
         Value = defaultValue;
-        _horizontalAlignment = horizontalAlignment;
         Width = width;
         Height = (int)(_text.Height + (2 * padding));
 
         // TODO: compare width to text width and raise a warning if it's too small.
 
         _textOffset = new Vector2(padding);
-    }
-
-    public override void FinalizeComponent(int availableWidth, int availableHeight)
-    {
-        base.FinalizeComponent(availableWidth, availableHeight);
-        _offset = _horizontalAlignment switch
-        {
-            HorizontalAlignment.Left => Vector2.Zero,
-            HorizontalAlignment.Center => new Vector2((availableWidth - Width) / 2f, 0f),
-            HorizontalAlignment.Right => new Vector2(availableWidth - Width, 0f),
-            _ => throw new ArgumentException("Horizontal alignment not supported."),
-        };
     }
 
     public override void FrameTick(IFrameTickManager frameTickManager)

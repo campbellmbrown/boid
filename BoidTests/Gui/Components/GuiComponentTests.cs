@@ -1,5 +1,6 @@
 using System;
 using Boid;
+using Boid.Gui;
 using Boid.Gui.Components;
 using Boid.Visual;
 using Microsoft.Xna.Framework;
@@ -13,11 +14,14 @@ namespace BoidTests.Gui.Components;
 /// </summary>
 class GuiComponentImplementation : GuiComponent
 {
-    public GuiComponentImplementation(int width, int height)
+    public GuiComponentImplementation(HorizontalAlignment horizontalAlignment, int width, int height)
+        : base(horizontalAlignment)
     {
         Width = width;
         Height = height;
     }
+
+    public Vector2 GetOrigin() => Origin;
 }
 
 public class GuiItemTests
@@ -29,7 +33,7 @@ public class GuiItemTests
     public void Setup()
     {
         _layerViewMock = new Mock<ILayerView>();
-        _guiComponent = new(100, 40);
+        _guiComponent = new(HorizontalAlignment.Left, 100, 40);
     }
 
     [Test]
@@ -99,5 +103,35 @@ public class GuiItemTests
 
         // Then:
         Assert.That(_guiComponent.Position, Is.EqualTo(newPosition));
+    }
+
+    [TestCase(HorizontalAlignment.Left, 0, 0)]
+    [TestCase(HorizontalAlignment.Center, 300, 0)]
+    [TestCase(HorizontalAlignment.Right, 600, 0)]
+    public void OffsetCalculatedBasedOnHorizontalAlignment(
+        HorizontalAlignment horizontalAlignment,
+        int expectedOriginX,
+        int expectedOriginY)
+    {
+        // Given:
+        GuiComponentImplementation guiComponent = new(horizontalAlignment, 400, 100);
+
+        // When:
+        guiComponent.FinalizeComponent(1000, 500);
+
+        // Then:
+        Assert.That(guiComponent.GetOrigin(), Is.EqualTo(new Vector2(expectedOriginX, expectedOriginY)));
+    }
+
+    [Test]
+    public void InvalidGuiPlacement_ThrowsException()
+    {
+        // Given:
+        GuiComponentImplementation guiComponent = new((HorizontalAlignment)99, 400, 110);
+
+        // When/then:
+        Assert.Throws<ArgumentException>(
+            () => guiComponent.FinalizeComponent(1000, 500)
+        );
     }
 }
