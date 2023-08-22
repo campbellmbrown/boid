@@ -118,6 +118,7 @@ public class GuiItemTests
         Assert.That(position, Is.EqualTo(new Vector2(expectedPosX, expectedPosY)));
     }
 
+    [Test]
     public void InvalidGuiPlacement_ThrowsException()
     {
         // Given:
