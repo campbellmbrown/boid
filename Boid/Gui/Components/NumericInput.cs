@@ -20,14 +20,35 @@ public class NumericInput : GuiComponent, INumericInput
 
     const float cursorBlinkInterval = 0.5f;
     float _cursorBlinkTimer = 0f;
-    bool _cursorVisible = false;
 
     const int spaceBetweenTextAndCursor = 1;
-    Vector2 CursorTop => TextPosition + new Vector2(_text.WidthToIndex(cursorIndex) + spaceBetweenTextAndCursor, 0);
-    Vector2 CursorBottom => TextPosition + new Vector2(_text.WidthToIndex(cursorIndex) + spaceBetweenTextAndCursor, _text.Height);
-    int cursorIndex = 0;
+    Vector2 CursorTop => TextPosition + new Vector2(_text.WidthToIndex(CursorIndex) + spaceBetweenTextAndCursor, 0);
+    Vector2 CursorBottom => TextPosition + new Vector2(_text.WidthToIndex(CursorIndex) + spaceBetweenTextAndCursor, _text.Height);
 
     Vector2 TextPosition => Origin + _textOffset;
+
+    public NumericInput(ITextDisplay text, int width, int padding, float defaultValue)
+        : this(HorizontalAlignment.Left, text, width, padding, defaultValue)
+    {
+    }
+
+    public NumericInput(
+        HorizontalAlignment horizontalAlignment,
+        ITextDisplay text,
+        int width,
+        int padding,
+        float defaultValue)
+        : base(horizontalAlignment)
+    {
+        _text = text;
+        Value = defaultValue;
+        Width = width;
+        Height = (int)(_text.Height + (2 * padding));
+
+        // TODO: compare width to text width and raise a warning if it's too small.
+
+        _textOffset = new Vector2(padding);
+    }
 
     public RectangleF LeftClickArea => new(Origin.X, Origin.Y, Width, Height);
 
@@ -54,27 +75,12 @@ public class NumericInput : GuiComponent, INumericInput
         {
             _value = value;
             _text.Text = value.ToString();
-            cursorIndex = _text.Text.Length;
+            CursorIndex = _text.Text.Length;
         }
     }
 
-    public NumericInput(
-        HorizontalAlignment horizontalAlignment,
-        ITextDisplay text,
-        int width,
-        int padding,
-        float defaultValue)
-        : base(horizontalAlignment)
-    {
-        _text = text;
-        Value = defaultValue;
-        Width = width;
-        Height = (int)(_text.Height + (2 * padding));
-
-        // TODO: compare width to text width and raise a warning if it's too small.
-
-        _textOffset = new Vector2(padding);
-    }
+    public int CursorIndex { get; private set; } = 0;
+    public bool CursorVisible { get; private set; } = false;
 
     public override void FrameTick(IFrameTickManager frameTickManager)
     {
@@ -85,13 +91,13 @@ public class NumericInput : GuiComponent, INumericInput
             if (_cursorBlinkTimer >= cursorBlinkInterval)
             {
                 _cursorBlinkTimer -= cursorBlinkInterval;
-                _cursorVisible = !_cursorVisible;
+                CursorVisible = !CursorVisible;
             }
         }
         else
         {
             _cursorBlinkTimer = 0f;
-            _cursorVisible = false;
+            CursorVisible = false;
         }
     }
 
@@ -105,7 +111,7 @@ public class NumericInput : GuiComponent, INumericInput
     {
         base.Draw(spriteBatch);
         _text.Draw(spriteBatch);
-        if (_cursorVisible)
+        if (CursorVisible)
         {
             spriteBatch.SpriteBatch.DrawLine(CursorTop, CursorBottom, Color.White);
         }
@@ -115,7 +121,7 @@ public class NumericInput : GuiComponent, INumericInput
     public void LeftClickAction()
     {
         Focused = true;
-        _cursorVisible = true;
+        CursorVisible = true;
     }
 
     public void ChangeState(ClickState clickState)
@@ -154,38 +160,38 @@ public class NumericInput : GuiComponent, INumericInput
             case Keys.D7:
             case Keys.D8:
             case Keys.D9:
-                _text.Text = _text.Text.Insert(cursorIndex, ((char)key).ToString());
-                cursorIndex += 1;
+                _text.Text = _text.Text.Insert(CursorIndex, ((char)key).ToString());
+                CursorIndex += 1;
                 break;
             case Keys.Back:
-            if (cursorIndex > 0)
+            if (CursorIndex > 0)
                 {
-                    _text.Text = _text.Text.Remove(cursorIndex - 1, 1);
-                    cursorIndex -= 1;
+                    _text.Text = _text.Text.Remove(CursorIndex - 1, 1);
+                    CursorIndex -= 1;
                 }
                 break;
             case Keys.Delete:
-                if (cursorIndex < _text.Text.Length)
+                if (CursorIndex < _text.Text.Length)
                 {
-                    _text.Text = _text.Text.Remove(cursorIndex, 1);
+                    _text.Text = _text.Text.Remove(CursorIndex, 1);
                 }
                 break;
             case Keys.OemPeriod:
                 if (!_text.Text.Contains('.'))
                 {
-                    _text.Text = _text.Text.Insert(cursorIndex, ".");
-                    cursorIndex += 1;
+                    _text.Text = _text.Text.Insert(CursorIndex, ".");
+                    CursorIndex += 1;
                 }
                 break;
             case Keys.Left:
-                cursorIndex = Math.Max(0, cursorIndex - 1);
+                CursorIndex = Math.Max(0, CursorIndex - 1);
                 _cursorBlinkTimer = 0f;
-                _cursorVisible = true;
+                CursorVisible = true;
                 break;
             case Keys.Right:
-                cursorIndex = Math.Min(_text.Text.Length, cursorIndex + 1);
+                CursorIndex = Math.Min(_text.Text.Length, CursorIndex + 1);
                 _cursorBlinkTimer = 0f;
-                _cursorVisible = true;
+                CursorVisible = true;
                 break;
         }
     }

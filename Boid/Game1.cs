@@ -13,7 +13,7 @@ namespace Boid;
 
 public class Game1 : Game
 {
-    GraphicsDeviceManager _graphics;
+    readonly GraphicsDeviceManager _graphics;
     readonly GuiManager _guiManager = new();
     readonly FrameTickManager _frameTickManager = new();
     SpriteBatchWrapper? _spriteBatchWrapper;
@@ -64,10 +64,10 @@ public class Game1 : Game
         const int margin = 10;
         const int inputWidth = 100;
         var font = contentProvider.GetFont(FontId.Normal);
-        NumericInput maxSpeedInput = new(HorizontalAlignment.Left, new TextDisplay(font, Color.White, 1f), inputWidth, padding, 100f);
-        NumericInput minSpeedInput = new(HorizontalAlignment.Left, new TextDisplay(font, Color.White, 1f), inputWidth, padding, 10f);
-        NumericInput flockDistanceInput = new(HorizontalAlignment.Left, new TextDisplay(font, Color.White, 1f), inputWidth, padding, 50f);
-        NumericInput avoidDistanceInput = new(HorizontalAlignment.Left, new TextDisplay(font, Color.White, 1f), inputWidth, padding, 10f);
+        NumericInput maxSpeedInput = new(new TextDisplay(font, Color.White, 1f), inputWidth, padding, 100f);
+        NumericInput minSpeedInput = new(new TextDisplay(font, Color.White, 1f), inputWidth, padding, 10f);
+        NumericInput flockDistanceInput = new(new TextDisplay(font, Color.White, 1f), inputWidth, padding, 50f);
+        NumericInput avoidDistanceInput = new(new TextDisplay(font, Color.White, 1f), inputWidth, padding, 10f);
         Label maxSpeedLabel = new(new TextDisplay("Max speed", font, Color.White, 1f));
         Label minSpeedLabel = new(new TextDisplay("Min speed", font, Color.White, 1f));
         Label flockDistanceLabel = new(new TextDisplay("Flock distance", font, Color.White, 1f));
