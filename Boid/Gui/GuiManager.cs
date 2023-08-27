@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Boid.Gui.Items;
 using Boid.Visual;
 
 namespace Boid.Gui;
 
-public interface IGuiManager : IVisual, IFrameTickable
+public interface IGuiManager : IFrameTickable, IVisual
 {
     void AddItem(IGuiItem item);
     void FinalizeGui();
@@ -34,18 +35,6 @@ public class GuiManager : IGuiManager
         _finalized = true;
     }
 
-    public void Draw(ISpriteBatchWrapper spriteBatch)
-    {
-        if (!_finalized)
-        {
-            throw new InvalidOperationException("Attempted to draw GUI manager before finalizing.");
-        }
-        foreach (var item in _items)
-        {
-            item.Draw(spriteBatch);
-        }
-    }
-
     public void FrameTick(IFrameTickManager frameTickManager)
     {
         if (!_finalized)
@@ -55,6 +44,18 @@ public class GuiManager : IGuiManager
         foreach (var item in _items)
         {
             item.FrameTick(frameTickManager);
+        }
+    }
+
+    public void Draw(ISpriteBatchWrapper spriteBatch)
+    {
+        if (!_finalized)
+        {
+            throw new InvalidOperationException("Attempted to draw GUI manager before finalizing.");
+        }
+        foreach (var item in _items)
+        {
+            item.Draw(spriteBatch);
         }
     }
 }

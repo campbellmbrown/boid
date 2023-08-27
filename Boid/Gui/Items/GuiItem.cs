@@ -2,33 +2,30 @@ using System;
 using Boid.Visual;
 using Microsoft.Xna.Framework;
 
-namespace Boid.Gui;
+namespace Boid.Gui.Items;
 
-public interface IGuiItem : IGuiElement, IVisual, IFrameTickable
+public interface IGuiItem : IGuiElement, IFrameTickable, IVisual
 {
-    GuiPlacement Placement { get; }
-
+    Vector2 Position { get; }
     void FinalizeItem();
 }
 
 public abstract class GuiItem : IGuiItem
 {
     readonly ILayerView _layerView;
+    readonly GuiPlacement _placement;
     bool _finalized = false;
 
-    public GuiPlacement Placement { get; protected init; }
+    protected GuiItem(ILayerView layerView, GuiPlacement placement)
+    {
+        _layerView = layerView;
+        _placement = placement;
+    }
+
     public int Width { get; protected set; }
     public int Height { get; protected set; }
 
-    public virtual void Draw(ISpriteBatchWrapper spriteBatch)
-    {
-        if (!_finalized)
-        {
-            throw new InvalidOperationException("Attempted to draw menu before finalizing.");
-        }
-    }
-
-    protected Vector2 Position => _layerView.Origin + Placement switch
+    public Vector2 Position => _layerView.Origin + _placement switch
     {
         GuiPlacement.TopLeft => Vector2.Zero,
         GuiPlacement.TopMiddle => new Vector2((_layerView.Size.X - Width) / 2f, 0f),
@@ -42,11 +39,6 @@ public abstract class GuiItem : IGuiItem
         _ => throw new ArgumentException("Grid placement not supported."),
     };
 
-    public GuiItem(ILayerView layerView)
-    {
-        _layerView = layerView;
-    }
-
     public virtual void FinalizeItem()
     {
         if (_finalized)
@@ -56,5 +48,19 @@ public abstract class GuiItem : IGuiItem
         _finalized = true;
     }
 
-    public abstract void FrameTick(IFrameTickManager frameTickManager);
+    public virtual void FrameTick(IFrameTickManager frameTickManager)
+    {
+        if (!_finalized)
+        {
+            throw new InvalidOperationException("Attempted to run GUI item before finalizing.");
+        }
+    }
+
+    public virtual void Draw(ISpriteBatchWrapper spriteBatch)
+    {
+        if (!_finalized)
+        {
+            throw new InvalidOperationException("Attempted to draw GUI item before finalizing.");
+        }
+    }
 }

@@ -1,39 +1,58 @@
 using System;
 using Boid.Input;
+using Boid.Utility;
 using Boid.Visual;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 
-namespace Boid.Gui;
+namespace Boid.Gui.Components;
 
 public interface INumericInput : IGuiComponent, ILeftClickable
 {
-    float Value { get; set; }
 }
 
 public class NumericInput : GuiComponent, INumericInput
 {
     readonly ITextDisplay _text;
-    readonly HorizontalAlignment _horizontalAlignment;
-    Vector2 _offset = Vector2.Zero;
+    readonly Ref<float> _ref;
     Vector2 _textOffset;
     Color _borderColor;
-    bool _finalized = false;
 
     const float cursorBlinkInterval = 0.5f;
     float _cursorBlinkTimer = 0f;
-    bool _cursorVisible = false;
 
     const int spaceBetweenTextAndCursor = 1;
-    Vector2 CursorTop => TextPosition + new Vector2(_text.WidthToIndex(cursorIndex) + spaceBetweenTextAndCursor, 0);
-    Vector2 CursorBottom => TextPosition + new Vector2(_text.WidthToIndex(cursorIndex) + spaceBetweenTextAndCursor, _text.Height);
-    int cursorIndex = 0;
+    Vector2 CursorTop => TextPosition + new Vector2(_text.WidthToIndex(CursorIndex) + spaceBetweenTextAndCursor, 0);
+    Vector2 CursorBottom => TextPosition + new Vector2(_text.WidthToIndex(CursorIndex) + spaceBetweenTextAndCursor, _text.Height);
 
-    Vector2 Origin => Position + _offset;
     Vector2 TextPosition => Origin + _textOffset;
 
-    public RectangleF LeftClickArea => new RectangleF(Origin.X, Origin.Y, Width, Height);
+    public NumericInput(ITextDisplay text, int width, int padding, Ref<float> value)
+        : this(HorizontalAlignment.Left, text, width, padding, value)
+    {
+    }
+
+    public NumericInput(
+        HorizontalAlignment horizontalAlignment,
+        ITextDisplay text,
+        int width,
+        int padding,
+        Ref<float> value)
+        : base(horizontalAlignment)
+    {
+        _text = text;
+        _ref = value;
+        SyncTextWithValue();
+        Width = width;
+        Height = (int)(_text.Height + (2 * padding));
+
+        // TODO: compare width to text width and raise a warning if it's too small.
+
+        _textOffset = new Vector2(padding);
+    }
+
+    public RectangleF LeftClickArea => new(Origin.X, Origin.Y, Width, Height);
 
     bool _focused = false;
     public bool Focused
@@ -45,72 +64,30 @@ public class NumericInput : GuiComponent, INumericInput
             if (!_focused)
             {
                 // Sync the value with the text when we lose focus
-                Value = string.IsNullOrEmpty(_text.Text) ? 0f : float.Parse(_text.Text);
+                UpdateValue(string.IsNullOrEmpty(_text.Text) ? 0f : float.Parse(_text.Text));
             }
         }
     }
 
-    float _value;
-    public float Value
-    {
-        get => _value;
-        set
-        {
-            _value = value;
-            _text.Text = value.ToString();
-            cursorIndex = _text.Text.Length;
-        }
-    }
-
-    public NumericInput(
-        ITextDisplay text,
-        HorizontalAlignment horizontalAlignment,
-        int width,
-        int padding,
-        float defaultValue)
-    {
-        _text = text;
-        Value = defaultValue;
-        _horizontalAlignment = horizontalAlignment;
-        Width = width;
-        Height = (int)(_text.Height + (2 * padding));
-
-        // TODO: compare width to text width and raise a warning if it's too small.
-
-        _textOffset = new Vector2(padding);
-    }
-
-    public override void FinalizeComponent(int availableWidth, int availableHeight)
-    {
-        if (_finalized)
-        {
-            throw new InvalidOperationException("Attempted to finalize numeric input when already finalized.");
-        }
-        _offset = _horizontalAlignment switch
-        {
-            HorizontalAlignment.Left => Vector2.Zero,
-            HorizontalAlignment.Center => new Vector2((availableWidth - Width) / 2f, 0f),
-            HorizontalAlignment.Right => new Vector2(availableWidth - Width, 0f),
-            _ => throw new ArgumentException("Horizontal alignment not supported."),
-        };
-        _finalized = true;
-    }
+    public int CursorIndex { get; private set; } = 0;
+    public bool CursorVisible { get; private set; } = false;
 
     public override void FrameTick(IFrameTickManager frameTickManager)
     {
+        base.FrameTick(frameTickManager);
         if (Focused)
         {
             _cursorBlinkTimer += frameTickManager.TimeDiffSec;
             if (_cursorBlinkTimer >= cursorBlinkInterval)
             {
                 _cursorBlinkTimer -= cursorBlinkInterval;
-                _cursorVisible = !_cursorVisible;
+                CursorVisible = !CursorVisible;
             }
         }
         else
         {
             _cursorBlinkTimer = 0f;
-            _cursorVisible = false;
+            CursorVisible = false;
         }
     }
 
@@ -122,12 +99,9 @@ public class NumericInput : GuiComponent, INumericInput
 
     public override void Draw(ISpriteBatchWrapper spriteBatch)
     {
-        if (!_finalized)
-        {
-            throw new InvalidOperationException("Attempted to draw numeric input before finalizing.");
-        }
+        base.Draw(spriteBatch);
         _text.Draw(spriteBatch);
-        if (_cursorVisible)
+        if (CursorVisible)
         {
             spriteBatch.SpriteBatch.DrawLine(CursorTop, CursorBottom, Color.White);
         }
@@ -137,7 +111,7 @@ public class NumericInput : GuiComponent, INumericInput
     public void LeftClickAction()
     {
         Focused = true;
-        _cursorVisible = true;
+        CursorVisible = true;
     }
 
     public void ChangeState(ClickState clickState)
@@ -160,7 +134,7 @@ public class NumericInput : GuiComponent, INumericInput
         switch (key)
         {
             case Keys.Escape:
-                Value = _value; // Reset text display
+                SyncTextWithValue();
                 Focused = false;
                 break;
             case Keys.Enter:
@@ -176,39 +150,51 @@ public class NumericInput : GuiComponent, INumericInput
             case Keys.D7:
             case Keys.D8:
             case Keys.D9:
-                _text.Text = _text.Text.Insert(cursorIndex, ((char)key).ToString());
-                cursorIndex += 1;
+                _text.Text = _text.Text.Insert(CursorIndex, ((char)key).ToString());
+                CursorIndex += 1;
                 break;
             case Keys.Back:
-            if (cursorIndex > 0)
+            if (CursorIndex > 0)
                 {
-                    _text.Text = _text.Text.Remove(cursorIndex - 1, 1);
-                    cursorIndex -= 1;
+                    _text.Text = _text.Text.Remove(CursorIndex - 1, 1);
+                    CursorIndex -= 1;
                 }
                 break;
             case Keys.Delete:
-                if (cursorIndex < _text.Text.Length)
+                if (CursorIndex < _text.Text.Length)
                 {
-                    _text.Text = _text.Text.Remove(cursorIndex, 1);
+                    _text.Text = _text.Text.Remove(CursorIndex, 1);
                 }
                 break;
             case Keys.OemPeriod:
                 if (!_text.Text.Contains('.'))
                 {
-                    _text.Text = _text.Text.Insert(cursorIndex, ".");
-                    cursorIndex += 1;
+                    _text.Text = _text.Text.Insert(CursorIndex, ".");
+                    CursorIndex += 1;
                 }
                 break;
             case Keys.Left:
-                cursorIndex = Math.Max(0, cursorIndex - 1);
+                CursorIndex = Math.Max(0, CursorIndex - 1);
                 _cursorBlinkTimer = 0f;
-                _cursorVisible = true;
+                CursorVisible = true;
                 break;
             case Keys.Right:
-                cursorIndex = Math.Min(_text.Text.Length, cursorIndex + 1);
+                CursorIndex = Math.Min(_text.Text.Length, CursorIndex + 1);
                 _cursorBlinkTimer = 0f;
-                _cursorVisible = true;
+                CursorVisible = true;
                 break;
         }
+    }
+
+    void UpdateValue(float value)
+    {
+        _ref.Value = value;
+        SyncTextWithValue();
+    }
+
+    void SyncTextWithValue()
+    {
+        _text.Text = _ref.Value.ToString();
+        CursorIndex = _text.Text.Length;
     }
 }

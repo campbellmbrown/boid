@@ -79,7 +79,7 @@ public class BoidSimulator : IVisual, IFrameTickable
             var difference = other.Position - boid.Position;
             if (difference.Length() < _parameters.AvoidDistance)
             {
-                var closeness = _parameters.AvoidDistance - difference.Length();
+                var closeness = _parameters.AvoidDistance.Value - difference.Length();
                 closenessSum += -difference * closeness;
             }
         }

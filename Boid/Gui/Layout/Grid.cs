@@ -1,9 +1,8 @@
 using System;
-using System.ComponentModel;
 using System.Linq;
+using Boid.Gui.Components;
 using Boid.Visual;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended;
 
 namespace Boid.Gui.Layout;
 
