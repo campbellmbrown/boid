@@ -1,6 +1,7 @@
 using System.Numerics;
 using Boid;
 using Boid.Gui.Components;
+using Boid.Utility;
 using Boid.Visual;
 using Microsoft.Xna.Framework.Input;
 using Moq;
@@ -12,6 +13,7 @@ public class NumericInputTests
 {
     Mock<ITextDisplay> _textMock;
     NumericInput _numericInput;
+    Ref<float> _ref;
 
     [SetUp]
     public void Setup()
@@ -21,7 +23,9 @@ public class NumericInputTests
         _textMock
             .SetupSet(text => text.Text = It.IsAny<string>())
             .Callback<string>(newText => _textMock.Setup(text => text.Text).Returns(newText));
-        _numericInput = new NumericInput(_textMock.Object, 100, 5, 123.456f);
+
+        _ref = new(123.456f);
+        _numericInput = new NumericInput(_textMock.Object, 100, 5, _ref);
     }
 
     [Test]
@@ -31,7 +35,7 @@ public class NumericInputTests
         _textMock.Setup(text => text.Height).Returns(20);
 
         // When:
-        _numericInput = new NumericInput(_textMock.Object, 100, 5, 123.456f);
+        _numericInput = new NumericInput(_textMock.Object, 100, 5, _ref);
 
         // Then:
         Assert.Multiple(() =>
@@ -49,7 +53,7 @@ public class NumericInputTests
         // Then:
         Assert.Multiple(() =>
         {
-            Assert.That(_numericInput.Value, Is.EqualTo(123.456f));
+            Assert.That(_ref.Value, Is.EqualTo(123.456f));
             Assert.That(_textMock.Object.Text, Is.EqualTo("123.456"));
         });
     }
@@ -160,7 +164,8 @@ public class NumericInputTests
     public void Key_ModifiesText(Keys key, string expectedText)
     {
         // Given a default value:
-        _numericInput = new NumericInput(_textMock.Object, 100, 5, 12345);
+        _ref = new(12345);
+        _numericInput = new NumericInput(_textMock.Object, 100, 5, _ref);
         // and our cursor is after the '3' and before the '4'
         _numericInput.KeyPressed(Keys.Left);
         _numericInput.KeyPressed(Keys.Left);
@@ -176,7 +181,8 @@ public class NumericInputTests
     public void Key_OnlyOnePeriodAdded()
     {
         // Given a default value:
-        _numericInput = new NumericInput(_textMock.Object, 100, 5, 12345);
+        _ref = new(12345);
+        _numericInput = new NumericInput(_textMock.Object, 100, 5, _ref);
         // and our cursor is after the '3' and before the '4'
         _numericInput.KeyPressed(Keys.Left);
         _numericInput.KeyPressed(Keys.Left);
@@ -208,7 +214,8 @@ public class NumericInputTests
     public void Key_Enter_UpdatesValue()
     {
         // Given a default value:
-        _numericInput = new NumericInput(_textMock.Object, 100, 5, 12345);
+        _ref = new(12345);
+        _numericInput = new NumericInput(_textMock.Object, 100, 5, _ref);
         // and some additions:
         _numericInput.KeyPressed(Keys.D6);
         _numericInput.KeyPressed(Keys.D7);
@@ -218,14 +225,15 @@ public class NumericInputTests
         _numericInput.KeyPressed(Keys.Enter);
 
         // Then:
-        Assert.That(_numericInput.Value, Is.EqualTo(12345678));
+        Assert.That(_ref.Value, Is.EqualTo(12345678));
     }
 
     [Test]
     public void Key_Escape_DoesNotUpdateValue()
     {
         // Given a default value:
-        _numericInput = new NumericInput(_textMock.Object, 100, 5, 12345);
+        _ref = new(12345);
+        _numericInput = new NumericInput(_textMock.Object, 100, 5, _ref);
         // and some additions:
         _numericInput.KeyPressed(Keys.D6);
         _numericInput.KeyPressed(Keys.D7);
@@ -235,14 +243,15 @@ public class NumericInputTests
         _numericInput.KeyPressed(Keys.Escape);
 
         // Then:
-        Assert.That(_numericInput.Value, Is.EqualTo(12345));
+        Assert.That(_ref.Value, Is.EqualTo(12345));
     }
 
     [Test]
     public void LoseFocus_UpdatesValue()
     {
         // Given a default value:
-        _numericInput = new NumericInput(_textMock.Object, 100, 5, 12345);
+        _ref = new(12345);
+        _numericInput = new NumericInput(_textMock.Object, 100, 5, _ref);
         // and some additions:
         _numericInput.KeyPressed(Keys.D6);
         _numericInput.KeyPressed(Keys.D7);
@@ -252,7 +261,7 @@ public class NumericInputTests
         _numericInput.Focused = false;
 
         // Then:
-        Assert.That(_numericInput.Value, Is.EqualTo(12345678));
+        Assert.That(_ref.Value, Is.EqualTo(12345678));
     }
 
     [Test]

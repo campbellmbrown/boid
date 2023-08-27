@@ -1,38 +1,19 @@
-using Boid.Gui.Components;
+using Boid.Utility;
 
 namespace Boid.Simulation;
 
 public interface IParameters
 {
-    float MaxSpeed { get; }
-    float MinSpeed { get; }
-    float FlockDistance { get; }
-    float AvoidDistance { get; }
+    Ref<float> MaxSpeed { get; }
+    Ref<float> MinSpeed { get; }
+    Ref<float> FlockDistance { get; }
+    Ref<float> AvoidDistance { get; }
 }
 
 public class Parameters : IParameters
 {
-    readonly INumericInput _maxSpeed;
-    readonly INumericInput _minSpeed;
-    readonly INumericInput _flockDistance;
-    readonly INumericInput _avoidDistance;
-
-    public Parameters(
-        INumericInput maxSpeed,
-        INumericInput minSpeed,
-        INumericInput flockDistance,
-        INumericInput avoidDistance
-
-    )
-    {
-        _maxSpeed = maxSpeed;
-        _minSpeed = minSpeed;
-        _flockDistance = flockDistance;
-        _avoidDistance = avoidDistance;
-    }
-
-    public float MaxSpeed => _maxSpeed.Value;
-    public float MinSpeed => _minSpeed.Value;
-    public float FlockDistance => _flockDistance.Value;
-    public float AvoidDistance => _avoidDistance.Value;
+    public Ref<float> MaxSpeed { get; } = new(100);
+    public Ref<float> MinSpeed { get; } = new(10);
+    public Ref<float> FlockDistance { get; } = new(50);
+    public Ref<float> AvoidDistance { get; } = new(10);
 }

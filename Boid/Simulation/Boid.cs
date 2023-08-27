@@ -70,11 +70,11 @@ public record Boid : IVisual, IFrameTickable
         var speed = Velocity.Length();
         if (speed > _parameters.MaxSpeed)
         {
-            Velocity = Vector2.Normalize(Velocity) * _parameters.MaxSpeed;
+            Velocity = Vector2.Normalize(Velocity) * _parameters.MaxSpeed.Value;
         }
         else if (speed < _parameters.MinSpeed)
         {
-            Velocity = Vector2.Normalize(Velocity) * _parameters.MinSpeed;
+            Velocity = Vector2.Normalize(Velocity) * _parameters.MinSpeed.Value;
         }
         Position += Velocity * frameTickManager.TimeDiffSec;
 

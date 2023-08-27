@@ -1,5 +1,6 @@
 using System;
 using Boid.Input;
+using Boid.Utility;
 using Boid.Visual;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -9,12 +10,12 @@ namespace Boid.Gui.Components;
 
 public interface INumericInput : IGuiComponent, ILeftClickable
 {
-    float Value { get; set; }
 }
 
 public class NumericInput : GuiComponent, INumericInput
 {
     readonly ITextDisplay _text;
+    readonly Ref<float> _ref;
     Vector2 _textOffset;
     Color _borderColor;
 
@@ -27,8 +28,8 @@ public class NumericInput : GuiComponent, INumericInput
 
     Vector2 TextPosition => Origin + _textOffset;
 
-    public NumericInput(ITextDisplay text, int width, int padding, float defaultValue)
-        : this(HorizontalAlignment.Left, text, width, padding, defaultValue)
+    public NumericInput(ITextDisplay text, int width, int padding, Ref<float> value)
+        : this(HorizontalAlignment.Left, text, width, padding, value)
     {
     }
 
@@ -37,11 +38,12 @@ public class NumericInput : GuiComponent, INumericInput
         ITextDisplay text,
         int width,
         int padding,
-        float defaultValue)
+        Ref<float> value)
         : base(horizontalAlignment)
     {
         _text = text;
-        Value = defaultValue;
+        _ref = value;
+        SyncTextWithValue();
         Width = width;
         Height = (int)(_text.Height + (2 * padding));
 
@@ -62,20 +64,8 @@ public class NumericInput : GuiComponent, INumericInput
             if (!_focused)
             {
                 // Sync the value with the text when we lose focus
-                Value = string.IsNullOrEmpty(_text.Text) ? 0f : float.Parse(_text.Text);
+                UpdateValue(string.IsNullOrEmpty(_text.Text) ? 0f : float.Parse(_text.Text));
             }
-        }
-    }
-
-    float _value;
-    public float Value
-    {
-        get => _value;
-        set
-        {
-            _value = value;
-            _text.Text = value.ToString();
-            CursorIndex = _text.Text.Length;
         }
     }
 
@@ -144,7 +134,7 @@ public class NumericInput : GuiComponent, INumericInput
         switch (key)
         {
             case Keys.Escape:
-                Value = _value; // Reset text display
+                SyncTextWithValue();
                 Focused = false;
                 break;
             case Keys.Enter:
@@ -194,5 +184,17 @@ public class NumericInput : GuiComponent, INumericInput
                 CursorVisible = true;
                 break;
         }
+    }
+
+    void UpdateValue(float value)
+    {
+        _ref.Value = value;
+        SyncTextWithValue();
+    }
+
+    void SyncTextWithValue()
+    {
+        _text.Text = _ref.Value.ToString();
+        CursorIndex = _text.Text.Length;
     }
 }

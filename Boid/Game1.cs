@@ -1,7 +1,5 @@
 ﻿using Boid.Gui;
-using Boid.Gui.Components;
 using Boid.Gui.Items;
-using Boid.Gui.Layout;
 using Boid.Input;
 using Boid.Simulation;
 using Boid.Visual;
@@ -59,44 +57,16 @@ public class Game1 : Game
         KeyboardWrapper keyboardWrapper = new();
         _inputManager = new InputManager(_spriteBatchManager.GuiLayerView, mouseWrapper, keyboardWrapper);
 
-        const int padding = 4;
-        const int spacing = 10;
-        const int margin = 10;
-        const int inputWidth = 100;
-        var font = contentProvider.GetFont(FontId.Normal);
-        NumericInput maxSpeedInput = new(new TextDisplay(font, Color.White, 1f), inputWidth, padding, 100f);
-        NumericInput minSpeedInput = new(new TextDisplay(font, Color.White, 1f), inputWidth, padding, 10f);
-        NumericInput flockDistanceInput = new(new TextDisplay(font, Color.White, 1f), inputWidth, padding, 50f);
-        NumericInput avoidDistanceInput = new(new TextDisplay(font, Color.White, 1f), inputWidth, padding, 10f);
-        Label maxSpeedLabel = new(new TextDisplay("Max speed", font, Color.White, 1f));
-        Label minSpeedLabel = new(new TextDisplay("Min speed", font, Color.White, 1f));
-        Label flockDistanceLabel = new(new TextDisplay("Flock distance", font, Color.White, 1f));
-        Label avoidDistanceLabel = new(new TextDisplay("Avoid distance", font, Color.White, 1f));
-        Grid grid = new(4, 2, spacing, margin);
-        grid.AddComponent(maxSpeedLabel, 0, 0);
-        grid.AddComponent(maxSpeedInput, 0, 1);
-        grid.AddComponent(minSpeedLabel, 1, 0);
-        grid.AddComponent(minSpeedInput, 1, 1);
-        grid.AddComponent(flockDistanceLabel, 2, 0);
-        grid.AddComponent(flockDistanceInput, 2, 1);
-        grid.AddComponent(avoidDistanceLabel, 3, 0);
-        grid.AddComponent(avoidDistanceInput, 3, 1);
-        Settings settings = new(_spriteBatchManager.GuiLayerView, GuiPlacement.TopLeft, grid);
-
+        Parameters parameters = new();
+        Settings settings = new(
+            _spriteBatchManager.GuiLayerView,
+            GuiPlacement.TopLeft,
+            contentProvider,
+            _inputManager,
+            parameters);
         _guiManager.AddItem(settings);
         _guiManager.FinalizeGui();
 
-        _inputManager.RegisterLeftClick(maxSpeedInput);
-        _inputManager.RegisterLeftClick(minSpeedInput);
-        _inputManager.RegisterLeftClick(flockDistanceInput);
-        _inputManager.RegisterLeftClick(avoidDistanceInput);
-
-        Parameters parameters = new(
-            maxSpeedInput,
-            minSpeedInput,
-            flockDistanceInput,
-            avoidDistanceInput
-        );
         _boidSimulator = new BoidSimulator(parameters, _spriteBatchManager.MainLayerView);
     }
 
