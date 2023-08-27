@@ -6,6 +6,11 @@ public record Ref<T> where T : struct, IComparable<T>
 {
     public T Value { get; set; }
 
+    public Ref()
+    {
+        Value = default;
+    }
+
     public Ref(T value)
     {
         Value = value;
