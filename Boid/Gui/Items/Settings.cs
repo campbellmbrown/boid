@@ -20,7 +20,7 @@ public class Settings : GuiItem, ISettings
         GuiPlacement placement,
         IContentProvider contentProvider,
         IInputManager inputManager,
-        Parameters parameters)
+        IParameters parameters)
         : base(layerView, placement)
     {
         const int padding = 4;
